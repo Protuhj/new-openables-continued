@@ -28,6 +28,7 @@ local UnpackAuraData = AuraUtil.UnpackAuraData; assert(UnpackAuraData ~= nil,'Un
 local GetPlayerAuraBySpellID = C_UnitAuras.GetPlayerAuraBySpellID; assert(GetPlayerAuraBySpellID ~= nil,'GetPlayerAuraBySpellID')
 -- local AddOn
 local ADDON, P = ...
+---@class AceAddon
 local NOP = LibStub("AceAddon-3.0"):GetAddon(ADDON)
 --
 local T_BAGS = P.T_BAGS; assert(T_BAGS ~= nil,'T_BAGS')
@@ -281,7 +282,8 @@ function NOP:ItemIsAppearanceCollected(lines)
   if not lines then return false end
   local collected = true
   for i=1,#lines do
-    if (lines[i] and lines[i].leftText) == TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN then
+    if ((lines[i] and lines[i].leftText) == TRANSMOGRIFY_TOOLTIP_APPEARANCE_UNKNOWN) or
+    (lines[i] and lines[i].leftText) == "You've collected this appearance, but not from this item" then
       collected = false
       break
     end

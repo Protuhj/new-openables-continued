@@ -50,6 +50,7 @@ local PLAYER_LIST_DELIMITER = _G.PLAYER_LIST_DELIMITER; assert(PLAYER_LIST_DELIM
 local table = _G.table; assert(table ~= nil,'table')
 -- local AddOn
 local ADDON, P = ...
+--- @class AceAddon
 local NOP = LibStub("AceAddon-3.0"):GetAddon(ADDON)
 --
 local ARCHAELOGY_ANNOUNCE = P.ARCHAELOGY_ANNOUNCE; assert(ARCHAELOGY_ANNOUNCE ~= nil,'ARCHAELOGY_ANNOUNCE')
@@ -81,7 +82,6 @@ local T_SPELL_FIND = P.T_SPELL_FIND; assert(T_SPELL_FIND ~= nil,'T_SPELL_FIND')
 local T_USE = P.T_USE; assert(T_USE ~= nil,'T_USE')
 local VALIDATE = P.VALIDATE -- this can be null or false
 local TIMER_IDLE = P.TIMER_IDLE; assert(TIMER_IDLE ~= nil,'TIMER_IDLE')
-local LIB_WAGO_ANALYTICS = P.LIB_WAGO_ANALYTICS; assert(LIB_WAGO_ANALYTICS ~= nil,'LIB_WAGO_ANALYTICS')
 --
 function NOP:Verbose(...) -- if verbose then output
   if NOP.AceDB.profile.verbose then print(...) end
@@ -317,13 +317,11 @@ function NOP:BlacklistItem(isPermanent,itemID) -- right click will add item into
       if not (type(NOP.AceDB.profile.T_BLACKLIST) == "table") then NOP.AceDB.profile.T_BLACKLIST = {} end
       NOP.AceDB.profile.T_BLACKLIST[0] = true
       NOP.AceDB.profile.T_BLACKLIST[itemID] = true
-      LIB_WAGO_ANALYTICS:IncrementCounter("SessionBlacklistItem")
       print(L["PERMA_BLACKLIST"],name or itemID)
     else
       if not (type(T_BLACKLIST) == "table") then T_BLACKLIST = {} end
       T_BLACKLIST[0] = true -- blacklist is defined
       T_BLACKLIST[itemID] = true
-      LIB_WAGO_ANALYTICS:IncrementCounter("PermanentBlacklistItem")
       if NOP.AceDB.profile.Skip then
         print(L["SESSION_BLACKLIST"],name or itemID)
       else

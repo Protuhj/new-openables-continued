@@ -19,6 +19,7 @@ local ITEM_SPELL_TRIGGER_ONUSE = _G.ITEM_SPELL_TRIGGER_ONUSE; assert(ITEM_SPELL_
 local ITEM_OPENABLE = _G.ITEM_OPENABLE; assert(ITEM_OPENABLE ~= nil,'ITEM_OPENABLE')
 -- local AddOn
 local ADDON, P = ...
+--- @class AceAddon
 local NOP = LibStub("AceAddon-3.0"):NewAddon(ADDON,"AceConsole-3.0","AceEvent-3.0","AceTimer-3.0") -- load core libs
 _G[ADDON] = NOP -- store reference to addon
 NOP.private = P -- store reference to private store
@@ -28,8 +29,6 @@ local LIB_BABBLESUBZONE_has = LIB_BABBLESUBZONE:GetUnstrictLookupTable() -- all 
 local LIB_HEREBEDRAGONS = LibStub("HereBeDragons-2.0",true); P.LIB_HEREBEDRAGONS = LIB_HEREBEDRAGONS -- MapID fetch 8.x and 7.x compatible
 local LIB_MASQUE = LibStub("Masque", true); P.LIB_MASQUE = LIB_MASQUE -- Masque support
 local LIB_QUESTITEM = LibStub("LibQuestItem-1.0", true); P.LIB_QUESTITEM = LIB_QUESTITEM -- Quest Items detection
-local LIB_WAGO_ANALYTICS = LibStub("WagoAnalytics"):Register("RBKpYOGE")
-P.LIB_WAGO_ANALYTICS = LIB_WAGO_ANALYTICS
 --
 P.VALIDATE = false -- validate tables after new patch
 P.SALVAGE_YARD = LIB_BABBLESUBZONE_has["Salvage Yard"]

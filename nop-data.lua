@@ -5,6 +5,7 @@ local assert = _G.assert
 local LibStub = _G.LibStub; assert(LibStub ~= nil,'LibStub')
 -- local AddOn
 local ADDON, P = ...
+--- @class AceAddon
 local NOP = LibStub("AceAddon-3.0"):GetAddon(ADDON)
 --
 local PRI_OPEN = P.PRI_OPEN; assert(PRI_OPEN ~= nil,'PRI_OPEN')
@@ -36,7 +37,6 @@ local FROSTFIRE_RIDGE7 = P.FROSTFIRE_RIDGE7; assert(FROSTFIRE_RIDGE7 ~= nil,'FRO
 local FROSTFIRE_RIDGE8 = P.FROSTFIRE_RIDGE8; assert(FROSTFIRE_RIDGE8 ~= nil,'FROSTFIRE_RIDGE8')
 local FROSTFIRE_RIDGE9 = P.FROSTFIRE_RIDGE9; assert(FROSTFIRE_RIDGE9 ~= nil,'FROSTFIRE_RIDGE9')
 local SHADOWMOON_VALLEY1 = P.SHADOWMOON_VALLEY1; assert(SHADOWMOON_VALLEY1 ~= nil,'SHADOWMOON_VALLEY1')
-local SHADOWMOON_VALLEY3 = P.SHADOWMOON_VALLEY3; assert(SHADOWMOON_VALLEY3 ~= nil,'SHADOWMOON_VALLEY3')
 local SHADOWMOON_VALLEY3 = P.SHADOWMOON_VALLEY3; assert(SHADOWMOON_VALLEY3 ~= nil,'SHADOWMOON_VALLEY3')
 local VALDRAKKEN = P.VALDRAKKEN; assert(VALDRAKKEN ~= nil,'VALDRAKKEN')
 --local LOAMM = P.LOAMM; assert(LOAMM ~= nil,'LOAMM')
@@ -92,7 +92,7 @@ NOP.T_SPELL_BY_NAME = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},
   [ 17047] = {{1,PRI_REP},nil,nil}, -- Argent Dawn Valor Token - "Increase Reputation"
   [210324] = {{1,PRI_REP},nil,nil}, -- Medal of Honor
   [213389] = {{1,PRI_OPEN},nil,nil}, -- Ancient Centaur Diary - "Breaking Down"
-  
+
   --10.0 Misc
   [198614] = {{1,PRI_OPEN},nil,nil}, -- Soggy Clump of Darkmoon Cards
   --10.0 Rep
@@ -106,7 +106,7 @@ NOP.T_SPELL_BY_NAME = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},
   [201782] = {{1,PRI_OPEN},nil,nil}, -- Tyr's Blessing
   [201783] = {{1,PRI_OPEN},nil,nil}, -- Tutaqan's Commendation
   [202670] = {{1,PRI_OPEN},nil,nil}, -- Treasure maps "Break Scroll Seal"
-  
+
   --10.0 Profession Knowledge
   [201705] = {{1,PRI_REP},nil,nil}, -- Studying - All knowledge use "Studying"
   --10.0 Dragon Riding
@@ -130,9 +130,9 @@ NOP.T_SPELL_BY_NAME = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},
   [202627] = {{1,PRI_REP},nil,nil}, -- "Melting Fluid" Aberrus tokens
   [202631] = {{1,PRI_REP},nil,nil}, -- "Ventilation Fluid" Aberrus tokens
   [202634] = {{1,PRI_REP},nil,nil}, -- "Cooling Fluid" Aberrus tokens
-  
+
   [208951] = {{1,PRI_REP},nil,nil}, -- "Open"
-  
+
   --10.2
   [210757] = {{1,PRI_REP},nil,nil}, -- Dream Warden Emblem
   [211374] = {{1,PRI_OPEN},nil,nil}, -- Tangled Yarn of Secrets -> "Untangling" -> Dream Wardens rep
@@ -159,7 +159,7 @@ NOP.T_SPELL_BY_NAME = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},
   [225633] = {{1,PRI_REP},nil,nil}, -- Obscenity's Idol
   
   --Delve
-  [233071] = {{1,PRI_OPEN},nil,nil}, -- Delver's Bounty
+  [248142] = {{1,PRI_OPEN},nil,nil}, -- Delver's Bounty
   
   --11.1
   --Tier Tokens
@@ -170,7 +170,7 @@ NOP.T_SPELL_BY_NAME = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},
   [228818] = {{1,PRI_REP},nil,nil}, -- Polished Gallybux
   
   --Misc
-  [232981] = {{1,PRI_REP},nil,nil}, -- Installing - G99 stuff
+  -- [232981] = {{1,PRI_REP},nil,nil}, -- Installing - G99 stuff
   
   --11.1.7
   [244901] = {{1,PRI_REP},nil,nil}, -- Loading - D.I.S.C.
@@ -473,7 +473,6 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   [140933] = {{1,PRI_REST},nil,nil}, -- Runed Aspirant's Band
   [141870] = {{1,PRI_OPEN},nil,nil}, -- Arcane Tablet of Falanaar
   [142156] = {{1,PRI_OPEN},nil,nil}, -- Order Resources Cache
-  [142156] = {{1,PRI_OPEN},nil,nil}, -- Order Resources Cache
   [142363] = {{1,PRI_REST},nil,nil}, -- Mark of Prey
   [142447] = {{1,PRI_OPEN},nil,nil}, -- Torn Sack of Pet Supplies
   [143605] = {{1,PRI_REST},nil,nil}, -- Strange Ball of Energy
@@ -537,18 +536,7 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   [189716] = {{1,PRI_OPEN},nil,nil}, -- Pocopoc's Face Decoration
   [189717] = {{1,PRI_OPEN},nil,nil}, -- Pocopoc's Shielded Core
   [189718] = {{1,PRI_OPEN},nil,nil}, -- Pocopoc's Upgraded Core
-  [189708] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Beryllium and Silver Body
-  [189709] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Cobalt and Copper Body
-  [189710] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Ruby and Platinum Body
-  [189711] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Gold and Ruby Components
-  [189712] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Silver and Beryllium Components
-  [189713] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Copper and Cobalt Components
-  [189714] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Platinum and Emerald Components
-  [189715] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Diamond Vambraces
-  [189716] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Face Decoration
-  [189717] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Shielded Core
-  [189718] = {{1,PRO_OPEN},nil,nil}, -- Pocopoc's Upgraded Core
-  
+
 -- Memories of the Runecarver
   [182617] = {{1,PRI_REP},nil,{[1912] = true,}}, -- Memory of Death's Embrace
   [182625] = {{1,PRI_REP},nil,{[1912] = true,}}, -- Memory of an Everlasting Grip
@@ -898,7 +886,6 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   [182383] = {{1,PRI_OPEN},nil,nil}, -- Dancing with Fate
   [182384] = {{1,PRI_OPEN},nil,nil}, -- Serrated Glaive
   [182385] = {{1,PRI_OPEN},nil,nil}, -- Growing Inferno
-  [182385] = {{1,PRI_OPEN},nil,nil}, -- Growing Inferno
   [182471] = {{1,PRI_OPEN},nil,nil}, -- Soul Furnace
   [182598] = {{1,PRI_OPEN},nil,nil}, -- Demon Muzzle
   [182604] = {{1,PRI_OPEN},nil,nil}, -- Roaring Fire
@@ -1207,12 +1194,12 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   
   -- 10.1
   -- Crests
-  [204075] = {{15,PRI_OPEN},nil,nil}, -- Whelpling's Shadowflame Crest Fragment
-  [204076] = {{15,PRI_OPEN},nil,nil}, -- Drake's Shadowflame Crest Fragment
-  [204077] = {{15,PRI_OPEN},nil,nil}, -- Wyrm's Shadowflame Crest Fragment
-  [204078] = {{15,PRI_OPEN},nil,nil}, -- Aspect's Shadowflame Crest Fragment
+  -- [204075] = {{15,PRI_OPEN},nil,nil}, -- Whelpling's Shadowflame Crest Fragment
+  -- [204076] = {{15,PRI_OPEN},nil,nil}, -- Drake's Shadowflame Crest Fragment
+  -- [204077] = {{15,PRI_OPEN},nil,nil}, -- Wyrm's Shadowflame Crest Fragment
+  -- [204078] = {{15,PRI_OPEN},nil,nil}, -- Aspect's Shadowflame Crest Fragment
   [205423] = {{1,PRI_OPEN},nil,nil}, -- Shadowflame Residue Sack
-  [205962] = {{1,PRI_OPEN},nil,nil}, -- Echoing Storm Flightstone
+  -- [205962] = {{1,PRI_OPEN},nil,nil}, -- Echoing Storm Flightstone
   
   --Other
   [204717] = {{2,PRI_OPEN},nil,nil}, -- Splintered Spark of Shadowflame
@@ -1259,23 +1246,23 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   -- 10.2
   [210996] = {{1,PRI_OPEN},nil,nil}, -- Moonberry's Many Mischief Makers
   [208396] = {{2,PRI_OPEN},nil,nil}, -- Dragon Shard of Knowledge
-  [210770] = {{1,PRI_OPEN},nil,nil}, -- Satchel of Drake's Dreaming Crests
-  [210917] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Whelpling's Dreaming Crests
-  [210923] = {{1,PRI_OPEN},nil,nil}, -- Clutch of Wyrm's Dreaming Crests
+  -- [210770] = {{1,PRI_OPEN},nil,nil}, -- Satchel of Drake's Dreaming Crests
+  -- [210917] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Whelpling's Dreaming Crests
+  -- [210923] = {{1,PRI_OPEN},nil,nil}, -- Clutch of Wyrm's Dreaming Crests
   
   [209837] = {{1,PRI_OPEN},nil,nil}, -- Faint Whispers of Dreaming
   [210790] = {{1,PRI_OPEN},nil,nil}, -- Ensemble: Elegant Green Dragon Outerwear
   [210468] = {{1,PRI_OPEN},nil,nil}, -- Emerald Blossom Dreamstone
   [209604] = {{1,PRI_OPEN},nil,nil}, -- Ensemble: Raiment of Amirdrassil
   
-  [210762] = {{1,PRI_OPEN},nil,nil}, -- Shimmering Clutch of Wyrm's Dreaming Crests
-  [210756] = {{1,PRI_OPEN},nil,nil}, -- Gleaming Satchel of Drake's Dreaming Crests
-  [210768] = {{1,PRI_OPEN},nil,nil}, -- Viridescent Bouquet of Aspect's Dreaming Crests
+  -- [210762] = {{1,PRI_OPEN},nil,nil}, -- Shimmering Clutch of Wyrm's Dreaming Crests
+  -- [210756] = {{1,PRI_OPEN},nil,nil}, -- Gleaming Satchel of Drake's Dreaming Crests
+  -- [210768] = {{1,PRI_OPEN},nil,nil}, -- Viridescent Bouquet of Aspect's Dreaming Crests
   
-  [212384] = {{1,PRI_OPEN},nil,nil}, -- Restless Satchel of Drake's Awakened Crests
-  [211950] = {{1,PRI_OPEN},nil,nil}, -- Lively Clutch of Wyrm's Awakened Crests
-  [212383] = {{1,PRI_OPEN},nil,nil}, -- Yawning Basket of Aspect's Awakened Crests
-  [211951] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Whelpling's Awakened Crests
+  -- [212384] = {{1,PRI_OPEN},nil,nil}, -- Restless Satchel of Drake's Awakened Crests
+  -- [211950] = {{1,PRI_OPEN},nil,nil}, -- Lively Clutch of Wyrm's Awakened Crests
+  -- [212383] = {{1,PRI_OPEN},nil,nil}, -- Yawning Basket of Aspect's Awakened Crests
+  -- [211951] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Whelpling's Awakened Crests
   
   [217242] = {{1,PRI_OPEN},nil,nil}, -- Awakening Stone Wing
   
@@ -1380,9 +1367,9 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   -- Sparks
   [211297] = {{2,PRI_OPEN},nil,nil}, -- Fractured Spark of Omens
   -- Crests
-  [221268] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Weathered Harbinger Crests
-  [221373] = {{1,PRI_OPEN},nil,nil}, -- Satchel of Carved Harbinger Crests
-  [220767] = {{1,PRI_OPEN},nil,nil}, -- Triumphant Satchel of Carved Harbinger Crests
+  [240928] = {{1,PRI_OPEN},nil,nil}, -- Pouch of WeatheredCrests
+  [240927] = {{1,PRI_OPEN},nil,nil}, -- Satchel of Carved Crests
+  [240926] = {{1,PRI_OPEN},nil,nil}, -- Triumphant Satchel of Carved Harbinger Crests
   [221375] = {{1,PRI_OPEN},nil,nil}, -- Pack of Runed Harbinger Crests
   [220773] = {{1,PRI_OPEN},nil,nil}, -- Celebratory Pack of Runed Harbinger Crests
   [220776] = {{1,PRI_OPEN},nil,nil}, -- Glorious Cluster of Gilded Harbinger Crests
@@ -1394,7 +1381,6 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   [225898] = {{1,PRI_OPEN},nil,nil}, -- Idol of the Earthmother
   [229353] = {{1,PRI_OPEN},nil,nil}, -- Rage-Filled Idol
   [225900] = {{1,PRI_OPEN},nil,nil}, -- Light-Touched Idol
-  [225908] = {{1,PRI_OPEN},nil,nil}, -- Relicblood of Zekvir
   [225905] = {{1,PRI_OPEN},nil,nil}, -- Olden Seeker Relic
   [225904] = {{1,PRI_OPEN},nil,nil}, -- Time Lost Relic
   [225903] = {{1,PRI_OPEN},nil,nil}, -- Amorphous Relic
@@ -1437,7 +1423,7 @@ NOP.T_ITEMS = { -- [itemID] = {{count_to_use,priority},{"sub-Zone",...},{[mapID]
   [231267] = {{1,PRI_OPEN},nil,nil}, -- Pouch of Weathered Undermine Crests
   
   -- Delves
-  [236096] = {{100,PRI_OPEN},nil,nil}, -- Coffer Key Shard
+  [245653] = {{100,PRI_OPEN},nil,nil}, -- Coffer Key Shard
   [235531] = {{1,PRI_OPEN},nil,nil}, -- Restored Coffer Key
   [233555] = {{1,PRI_OPEN},nil,nil}, -- Restored Coffer Key
   
