@@ -151,8 +151,7 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
         else
           return 0
         end
-      end
-      if heading == TOY then
+      elseif heading == TOY then
         if not NOP:ItemIsToyCollected(lines) then
           self:Verbose("ItemGetPattern:","itemID",itemID,"will be shown as TOY")
           return 1, P.PRI_OPEN
@@ -173,11 +172,22 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
             return c[1], c[2], z, m
           end
         end
+        -- Matches all spark items that are free (0 stone cost)
+        local countNeeded = strmatch(heading, ".*Combine (%d) .* with 0 .* to create a.*")
+        if countNeeded ~= nil and tonumber(countNeeded) > 0 then
+          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+          return tonumber(countNeeded), P.PRI_OPEN
+        end
+         -- Matches raid set item creation items
+        if strfind(heading, "Use: Synthesize a soulbound.*") then
+          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+          return 1, P.PRI_OPEN
+        end
       end
       for key, data in pairs(T_OPEN) do
         if strfind(heading,key,1,true) then
           local c, z, m = unpack(data,1,3)
-          self:Verbose("ItemGetPattern:","itemID",itemID,"will be shown as OPEN")
+          self:Verbose("ItemGetPattern: itemID",itemID,"will be shown as OPEN")
           return c[1], c[2], z, m
         end
       end
@@ -244,7 +254,7 @@ function NOP:ItemScan() -- /run NOP:ItemScan(); foreach(T_USE,print)
             end
           elseif linkType == P.ITEM_TYPE_ITEM then
             local count, prio, zone, map, aura = self:ItemGetSpell(itemID) -- 1st lookup by spell
-            if count then 
+            if count then
               if (count > 0) then self:ItemToUse(itemID, count, prio, zone, map, aura, "SPELL") else T_USE[itemID] = nil end
             else
               count, prio, zone, map, aura = self:ItemGetItem(itemID) -- 2nd direct by itemID
@@ -319,6 +329,9 @@ function NOP:ItemIsUsable(itemID) -- look in tooltip if there is no red text
       if lines[i] and lines[i].leftText then
         local text = lines[i].leftText
         if text and text ~= "" then
+          if text == ITEM_COSMETIC then
+            return true
+          end
           if self:ItemIsUnusable(lines[i].leftColor:GetRGBAAsBytes()) then 
             self:Verbose("itemID",itemID,"has red text in tooltip!",text)
             return false
