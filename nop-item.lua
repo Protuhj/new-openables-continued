@@ -173,7 +173,7 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           end
         end
         -- Matches all spark items that are free (0 stone cost)
-        local countNeeded = strmatch(heading, ".*Combine (%d) .* with 0 .* to create a.*")
+        local countNeeded = strmatch(heading, ".*Combine (%d+) .* with 0 .* to create a.*")
         if countNeeded ~= nil and tonumber(countNeeded) > 0 then
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return tonumber(countNeeded), P.PRI_OPEN
@@ -182,6 +182,14 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
         if strfind(heading, "Use: Synthesize a soulbound.*") then
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return 1, P.PRI_OPEN
+        end
+        -- Matches all ancient mana items
+        local mananeeded = strmatch(heading, ".*Gain (%d+) Ancient Mana.*")
+        if mananeeded ~= nil and tonumber(mananeeded) > 0 then
+          local info = C_CurrencyInfo.GetCurrencyInfo(1155)
+          if info.quantity + tonumber(mananeeded) <= info.maxQuantity then
+            return 1, P.PRI_OPEN
+          end
         end
       end
       for key, data in pairs(T_OPEN) do
