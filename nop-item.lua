@@ -119,7 +119,7 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
     print(format("|cFFFF0000Error|r broken tooltip for |cFFFF0000%s|r itemID(%d)",GetItemInfo(itemID) or "unknown",itemID))
     return -- invalid tooltip
   end
-  local itemType, itemSubType, _, _, _, _, classID, subclassID = select(6, GetItemInfo(itemID))
+  local itemLevel, _, itemType, itemSubType, _, itemEquipLoc, _, _, classID, subclassID = select(4, GetItemInfo(itemID))
   if classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Mount then
     self:Verbose("ItemGetPattern:","itemID",itemID,"will be shown as MOUNT")
     return 1, P.PRI_OPEN --fallback for mounts
@@ -183,12 +183,41 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return 1, P.PRI_OPEN
         end
+        --- LEMIX ---
         -- Matches all ancient mana items
         local mananeeded = strmatch(heading, ".*Gain (%d+) Ancient Mana.*")
         if mananeeded ~= nil and tonumber(mananeeded) > 0 then
           local info = C_CurrencyInfo.GetCurrencyInfo(1155)
           if info.quantity + tonumber(mananeeded) <= info.maxQuantity then
             return 1, P.PRI_OPEN
+          end
+        end
+        -- Matches artifact items that didn't automatically get used
+        if strfind(heading, "Your artifact weapon automatically.*") then
+          return 1, P.PRI_OPEN
+        end
+        -- Matches Upgrade armor
+        if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
+          local success, result = pcall(function()
+            local realItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
+            local invslotString = itemEquipLoc:gsub("INVTYPE", "INVSLOT")
+            if invslotString == "INVSLOT_CLOAK" then
+              invslotString = "INVSLOT_BACK"
+            elseif invslotString == "INVSLOT_ROBE" then
+              invslotString = "INVSLOT_CHEST"
+            end
+            -- local equipLink = GetInventoryItemLink("player", _G[invslotString])
+            local equipItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromEquipmentSlot(_G[invslotString]))
+            if (realItemLevel or 0) > (equipItemLevel or 0) then
+              -- print("item, ", itemID, " is higher item level than ", equipLink, ":", realItemLevel, " vs. ", equipItemLevel)
+              return true
+            end
+            return nil
+          end)
+          if success and result then
+            return 1, P.PRI_OPEN
+          elseif not success then
+            print("item ", itemID, " error during compare bag/slot: ", bag, "/", slot, " itemEquipLoc: ", itemEquipLoc)
           end
         end
       end
@@ -454,7 +483,12 @@ function NOP:ItemShow(itemID,prio) -- add item to button
     mtarget = nil
     mtargetitem =  format("item:%d", itemID) --format("%d %d" ,bagID,slotID) -- disenchant this
   elseif C_Item.IsDressableItemByID(itemID) then
-    mtext = format(P.MACRO_ACTIVE,itemID)
+    -- WoW Remix: Legion buff LEMIX
+    if not C_UnitAuras.GetPlayerAuraBySpellID(1213439) then
+      mtext = format(P.MACRO_ACTIVE,itemID)
+    else
+      mtext = format(P.MACRO_EQUIP, bagID, slotID)
+    end
   end
   if (bt.itemCount ~= itemCount) or (bt.itemID ~= itemID) or (bt.isGlow ~= isGlow) or (bt.mtext ~= mtext) or (bt.mtype ~= mtype) or (bt.mspell ~= mspell) or (bt.mtarget ~= mtarget) or (bt.mtargetitem ~= mtargetitem) or (bt.bagID ~= bagID) or (bt.slotID ~= slotID) then
     bt.prio = prio
