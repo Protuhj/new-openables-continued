@@ -1457,7 +1457,7 @@ NOP.T_ITEMS = {                                                                 
   [233555] = { { 1, PRI_OPEN }, nil, nil },   -- Restored Coffer Key
 
   -- Remix
-  [253224] = { { 10, PRI_OPEN }, nil, nil },  -- Mote of a Broken Time
+  -- [253224] = { { 10, PRI_OPEN }, nil, nil },  -- Mote of a Broken Time
   [246936] = { { 1, PRI_OPEN }, nil, nil },   -- Resonant Epoch Memento
   [246937] = { { 1, PRI_OPEN }, nil, nil },   -- Perfected Epoch Memento
   [245925] = { { 1, PRI_OPEN }, nil, nil },   -- Artifactium Sand

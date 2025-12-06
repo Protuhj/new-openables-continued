@@ -183,6 +183,11 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return 1, P.PRI_OPEN
         end
+         -- Matches housing decor items
+        if strfind(heading, "Use: Add this Decor.*") then
+          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+          return 1, P.PRI_OPEN
+        end
         --- LEMIX ---
         -- Matches all ancient mana items
         local mananeeded = strmatch(heading, ".*Gain (%d+) Ancient Mana.*")
@@ -197,27 +202,42 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           return 1, P.PRI_OPEN
         end
         -- Matches Upgrade armor
-        if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
-          local success, result = pcall(function()
-            local realItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
-            local invslotString = itemEquipLoc:gsub("INVTYPE", "INVSLOT")
-            if invslotString == "INVSLOT_CLOAK" then
-              invslotString = "INVSLOT_BACK"
-            elseif invslotString == "INVSLOT_ROBE" then
-              invslotString = "INVSLOT_CHEST"
+        local _, iLvlEquipped = GetAverageItemLevel()
+        if iLvlEquipped < 740 then
+          -- Mote of a Broken Time
+          if itemID == 253224 then
+            return 10, P.PRI_OPEN
+          end
+          -- Items can only be upgrades if our item level is under 740
+          if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
+            local success, result = pcall(function()
+              local realItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
+              local invslotString = itemEquipLoc:gsub("INVTYPE", "INVSLOT")
+              if invslotString == "INVSLOT_CLOAK" then
+                invslotString = "INVSLOT_BACK"
+              elseif invslotString == "INVSLOT_ROBE" then
+                invslotString = "INVSLOT_CHEST"
+              end
+              -- local equipLink = GetInventoryItemLink("player", _G[invslotString])
+              local itemLoc = ItemLocation:CreateFromEquipmentSlot(_G[invslotString])
+              -- Check if an item is in the slot, otherwise the GetCurrentItemLevel will throw an error
+              if C_Item.DoesItemExist(itemLoc) then
+                local equipItemLevel = C_Item.GetCurrentItemLevel(itemLoc)
+                if (realItemLevel or 0) > (equipItemLevel or 1000) then
+                  -- print("item, ", itemID, " is higher item level than ", equipLink, ":", realItemLevel, " vs. ", equipItemLevel)
+                  return true
+                end
+              else
+                -- Slot is empty, we can equip the item
+                return true
+              end
+              return nil
+            end)
+            if success and result then
+              return 1, P.PRI_OPEN
+            elseif not success then
+              print("item ", itemID, " error during compare bag/slot: ", bag, "/", slot, " itemEquipLoc: ", itemEquipLoc)
             end
-            -- local equipLink = GetInventoryItemLink("player", _G[invslotString])
-            local equipItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromEquipmentSlot(_G[invslotString]))
-            if (realItemLevel or 0) > (equipItemLevel or 0) then
-              -- print("item, ", itemID, " is higher item level than ", equipLink, ":", realItemLevel, " vs. ", equipItemLevel)
-              return true
-            end
-            return nil
-          end)
-          if success and result then
-            return 1, P.PRI_OPEN
-          elseif not success then
-            print("item ", itemID, " error during compare bag/slot: ", bag, "/", slot, " itemEquipLoc: ", itemEquipLoc)
           end
         end
       end

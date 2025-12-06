@@ -76,6 +76,8 @@ function NOP:InitEvents()
   self:RegisterEvent("QUEST_ACCEPTED") -- update Quest Bar if any item starting quest is placed on it
   self:RegisterEvent("UI_ERROR_MESSAGE") -- blacklist some messages when items and spells are loaded from cache
   self:RegisterEvent("GARRISON_LANDINGPAGE_SHIPMENTS") -- herald notify
+  -- Lemix support
+  self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", "BAG_UPDATE") -- equipment changed, since we can equip gear from the button with my changes
 end
 local OK_ERROR_SHOW = { -- OK errors not ship but not clear them as well
   [ERR_SPELL_FAILED_ANOTHER_IN_PROGRESS] = true,
