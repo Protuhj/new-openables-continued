@@ -183,10 +183,21 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return 1, P.PRI_OPEN
         end
-         -- Matches housing decor items
+         -- Matches housing decor items (TODO: Localization)
         if strfind(heading, "Use: Add this Decor.*") then
           self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
           return 1, P.PRI_OPEN
+        end
+        -- Matches all valorstone-granting items
+        local stonesneeded = strmatch(heading, ".*Contains (%d+) Valorstones.*")
+        if stonesneeded ~= nil and tonumber(stonesneeded) > 0 then
+          local info = C_CurrencyInfo.GetCurrencyInfo(3008)
+          if info.quantity + tonumber(stonesneeded) <= info.maxQuantity then
+            return 1, P.PRI_OPEN
+          else
+            -- No room
+            return -1
+          end
         end
         --- LEMIX ---
         -- Matches all ancient mana items
@@ -195,6 +206,9 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
           local info = C_CurrencyInfo.GetCurrencyInfo(1155)
           if info.quantity + tonumber(mananeeded) <= info.maxQuantity then
             return 1, P.PRI_OPEN
+          else
+            -- No room
+            return -1
           end
         end
         -- Matches artifact items that didn't automatically get used
@@ -203,13 +217,20 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
         end
         -- Matches Upgrade armor
         local _, iLvlEquipped = GetAverageItemLevel()
-        if iLvlEquipped < 740 then
-          -- Mote of a Broken Time
-          if itemID == 253224 then
-            return 10, P.PRI_OPEN
+        -- 779 is a guess?
+        if iLvlEquipped < 779 then
+          if iLvlEquipped < 740 then
+            -- Mote of a Broken Time - only <= 740
+            if itemID == 253224 then
+              return 10, P.PRI_OPEN
+            end
           end
-          -- Items can only be upgrades if our item level is under 740
-          if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
+          -- Flawless Thread of Time
+            if itemID == 253227 then
+              return 10, P.PRI_OPEN
+            end
+          -- Items can only be upgrades if our item level is under 779
+          if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_NON_EQUIP_IGNORE" and itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
             local success, result = pcall(function()
               local realItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
               local invslotString = itemEquipLoc:gsub("INVTYPE", "INVSLOT")
@@ -244,7 +265,7 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
       for key, data in pairs(T_OPEN) do
         if strfind(heading,key,1,true) then
           local c, z, m = unpack(data,1,3)
-          self:Verbose("ItemGetPattern: itemID",itemID,"will be shown as OPEN")
+          self:Verbose("ItemGetPattern:","itemID",itemID,"will be shown as OPEN")
           return c[1], c[2], z, m
         end
       end
@@ -504,7 +525,8 @@ function NOP:ItemShow(itemID,prio) -- add item to button
     mtargetitem =  format("item:%d", itemID) --format("%d %d" ,bagID,slotID) -- disenchant this
   elseif C_Item.IsDressableItemByID(itemID) then
     -- WoW Remix: Legion buff LEMIX
-    if not C_UnitAuras.GetPlayerAuraBySpellID(1213439) then
+    -- if not C_UnitAuras.GetPlayerAuraBySpellID(1213439) then
+    if C_Item.IsCosmeticItem(itemID) then
       mtext = format(P.MACRO_ACTIVE,itemID)
     else
       mtext = format(P.MACRO_EQUIP, bagID, slotID)

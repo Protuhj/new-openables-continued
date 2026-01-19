@@ -496,6 +496,7 @@ NOP.T_ITEMS = {                                                                 
   [140926] = { { 1, PRI_REST }, nil, nil },                                            -- Bowmen's Orders
   [140927] = { { 1, PRI_REST }, nil, nil },                                            -- Water Globe
   [140928] = { { 1, PRI_REST }, nil, nil },                                            -- Ox Initiate's Pledge
+  [184866] = { { 1, PRI_OPEN }, nil, nil },                                            -- Grummlepouch
   [140929] = { { 1, PRI_REST }, nil, nil },                                            -- Squire's Oath
   [140932] = { { 1, PRI_REST }, nil, nil },                                            -- Earthen Mark
   [140933] = { { 1, PRI_REST }, nil, nil },                                            -- Runed Aspirant's Band
