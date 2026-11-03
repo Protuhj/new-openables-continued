@@ -98,10 +98,10 @@ function NOP:ItemGetItem(itemID) -- looking for usable item by itemID returns (c
 end
 function NOP:ItemGetLockPattern(itemID, lines) -- test tooltip for locked item
   if NOP.AceDB.profile.profession and self.pickLockLevel and (#lines > 2) then -- rogue picklock in use
-    local locked = -1 
+    local locked = -1
     if string.match(lines[2].leftText,"^" .. LOCKED .. "$") then locked = 3 end -- LOCKED is Blizzard's UI global variable and is localized text of Locked, it must be at start of 2dn line in tooltip
     if string.match(lines[3].leftText,"^" .. LOCKED .. "$") then locked = 4 end -- color-blind mode adds extra line
-    if locked > 0 then 
+    if locked > 0 then
       local lockLevel = tonumber(string.match(lines[locked].leftText,"%d+")) -- this line must contain unlock level
       if lockLevel and (self.pickLockLevel >= lockLevel) then -- I can picklock this!
         self:Verbose("ItemGetLockPattern:",itemID,"LockeLevel",lockLevel)
@@ -111,6 +111,10 @@ function NOP:ItemGetLockPattern(itemID, lines) -- test tooltip for locked item
     end
   end
 end
+
+----------------------------------------
+----------- Pattern Matching -----------
+----------------------------------------
 function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via pattern in tooltip returns (count, 2, zone, map) or nil
   local lines = NOP:GetTooltipLinesByBagItem(bag, slot)
   if (#lines < 1) then -- bug, all items should have tooltip!
@@ -119,7 +123,7 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
     print(format("|cFFFF0000Error|r broken tooltip for |cFFFF0000%s|r itemID(%d)",GetItemInfo(itemID) or "unknown",itemID))
     return -- invalid tooltip
   end
-  local itemLevel, _, itemType, itemSubType, _, itemEquipLoc, _, _, classID, subclassID = select(4, GetItemInfo(itemID))
+  local itemLevel, _, itemType, itemSubType, _, itemEquipLoc, _, _, classID, subclassID, bindType, expansionID, _, isReagent = select(4, GetItemInfo(itemID))
   if classID == Enum.ItemClass.Miscellaneous and subclassID == Enum.ItemMiscellaneousSubclass.Mount then
     self:Verbose("ItemGetPattern:","itemID",itemID,"will be shown as MOUNT")
     return 1, P.PRI_OPEN --fallback for mounts
@@ -179,17 +183,37 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
         -- Matches all spark items that are free (0 stone cost)
         local countNeeded = strmatch(heading, ".*Combine (%d+) .* with 0 .* to create a.*")
         if countNeeded ~= nil and tonumber(countNeeded) > 0 then
-          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+          self:Verbose("ItemGetPattern:","itemID",itemID,"Spark item matched")
           return tonumber(countNeeded), P.PRI_OPEN
         end
-         -- Matches raid set item creation items
+        -- Matches all Midnight crafting items that can be combined
+        if isReagent and (expansionID == LE_EXPANSION_MIDNIGHT) and (bindType == Enum.ItemBind.OnAcquire) then
+          local countNeeded = strmatch(heading, ".*Combine (%d+).*")
+          if countNeeded ~= nil and tonumber(countNeeded) > 0 then
+            self:Verbose("ItemGetPattern:","itemID",itemID,"Midnight reagent item matched")
+            return tonumber(countNeeded), P.PRI_OPEN
+          end
+        end
+        -- Matches all mote items from TBC and rousing items from DF
+        countNeeded = strmatch(heading, "(.*Turn ten.*into.*)")
+        if countNeeded ~= nil then
+          self:Verbose("ItemGetPattern:","itemID",itemID,"Motes matched")
+          return 10, P.PRI_OPEN
+        end
+        -- Matches all crystallized items from WOTLK
+        countNeeded = strmatch(heading, "(.*Turn 10.*into an.*)")
+        if countNeeded ~= nil then
+          self:Verbose("ItemGetPattern:","itemID",itemID,"Crystallized matched")
+          return 10, P.PRI_OPEN
+        end
+        -- Matches raid set item creation items
         if strfind(heading, "Use: Synthesize a soulbound.*") then
-          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+          self:Verbose("ItemGetPattern:","itemID",itemID,"Item token matched")
           return 1, P.PRI_OPEN
         end
          -- Matches housing decor items (TODO: Localization)
-        if strfind(heading, "Use: Add this Decor.*") then
-          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as OPEN")
+        if strfind(heading, "Use: Add this [dD]ecor.*") then
+          self:Verbose("ItemGetPattern: itemID ", itemID, "will be shown as DECOR")
           return 1, P.PRI_OPEN
         end
         -- Matches all valorstone-granting items
@@ -203,7 +227,9 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
             return -1
           end
         end
+        -------------
         --- LEMIX ---
+        -------------
         -- Matches all ancient mana items
         local mananeeded = strmatch(heading, ".*Gain (%d+) Ancient Mana.*")
         if mananeeded ~= nil and tonumber(mananeeded) > 0 then
@@ -215,28 +241,28 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
             return -1
           end
         end
-        -- Matches artifact items that didn't automatically get used
-        if strfind(heading, "Your artifact weapon automatically.*") then
+        --- Midnight ---
+        -- Matches crest-rewarding items
+        if strfind(heading, "Use: Collect (%d+).*") then
+          return 1, P.PRI_OPEN
+        end
+        -- Matches some marl-rewarding items
+        if strfind(heading, "Use: Gain .* Voidlight Marl.*") then
           return 1, P.PRI_OPEN
         end
         -- Matches Upgrade armor
         local _, iLvlEquipped = GetAverageItemLevel()
         -- 779 is a guess?
         if iLvlEquipped < 779 then
-          if iLvlEquipped < 740 then
-            -- Mote of a Broken Time - only <= 740
-            if itemID == 253224 then
-              return 10, P.PRI_OPEN
-            end
-          end
-          -- Flawless Thread of Time
-            if itemID == 253227 then
-              return 10, P.PRI_OPEN
-            end
           -- Items can only be upgrades if our item level is under 779
           if itemType == "Armor" and (itemEquipLoc and itemEquipLoc ~= "") and (itemEquipLoc ~= "INVTYPE_NON_EQUIP_IGNORE" and itemEquipLoc ~= "INVTYPE_SHIELD" and itemEquipLoc ~= "INVTYPE_TRINKET" and itemEquipLoc ~= "INVTYPE_HOLDABLE" and itemEquipLoc ~= "INVTYPE_NECK" and itemEquipLoc ~= "INVTYPE_FINGER") then
+            local class = UnitClass("player")
             local success, result = pcall(function()
-              local realItemLevel = C_Item.GetCurrentItemLevel(ItemLocation:CreateFromBagAndSlot(bag, slot))
+              local bagItemLoc = ItemLocation:CreateFromBagAndSlot(bag, slot)
+              if not IsItemPreferredArmorType(bagItemLoc) then
+                return nil
+              end
+              local realItemLevel = C_Item.GetCurrentItemLevel(bagItemLoc)
               local invslotString = itemEquipLoc:gsub("INVTYPE", "INVSLOT")
               if invslotString == "INVSLOT_CLOAK" then
                 invslotString = "INVSLOT_BACK"
@@ -248,6 +274,10 @@ function NOP:ItemGetPattern(itemID,bag,slot) -- looking for usable item via patt
               -- Check if an item is in the slot, otherwise the GetCurrentItemLevel will throw an error
               if C_Item.DoesItemExist(itemLoc) then
                 local equipItemLevel = C_Item.GetCurrentItemLevel(itemLoc)
+                -- For the wrong armor class, make it not worth wearing
+                if not IsItemPreferredArmorType(itemLoc) then
+                  equipItemLevel = 0
+                end
                 if (realItemLevel or 0) > (equipItemLevel or 1000) then
                   -- print("item, ", itemID, " is higher item level than ", equipLink, ":", realItemLevel, " vs. ", equipItemLevel)
                   return true
@@ -393,6 +423,7 @@ function NOP:ItemIsToyCollected(lines)
   end
   return collected
 end
+-- ItemIsUsable
 function NOP:ItemIsUsable(itemID) -- look in tooltip if there is no red text
   if not T_BAGS[itemID] then return end -- don't have item
   local bag,slot,itemLink = unpack(T_BAGS[itemID])
@@ -407,30 +438,48 @@ function NOP:ItemIsUsable(itemID) -- look in tooltip if there is no red text
     --self.scanFrame:SetBagItem(bag, slot) -- fill up tooltip
   end
   if #lines > 0 then
+    -- Unreliable
+    local itemType = select(6, GetItemInfo(itemID)) or ""
+    local itemDesc = select(18, GetItemInfo(itemID)) or ""
+    local foundUseLine = true
+    local isRecipe = itemType == P.ITEM_TYPE_RECIPE
+    if not isRecipe and strfind(itemDesc, "Teaches.*") then
+      isRecipe = true
+    end
+    if isRecipe then
+      foundUseLine = false
+    end
     for i=1,#lines do -- scan all lines in tooltip
       if lines[i] and lines[i].leftText then
         local text = lines[i].leftText
         if text and text ~= "" then
+          if isRecipe and not foundUseLine then
+            if strfind(text, "Use:.*") then
+              foundUseLine = true
+            end
+          end
           if text == ITEM_COSMETIC then
             return true
           end
-          if self:ItemIsUnusable(lines[i].leftColor:GetRGBAAsBytes()) then 
-            self:Verbose("itemID",itemID,"has red text in tooltip!",text)
-            return false
-          end
-          if i == 1 then -- all faction tokens should be checked
-            local level, top, value, reward = self:GetReputation(text)
-            if level then
-              if ((level > 7) and NOP.AceDB.profile.SkipExalted) or reward then return false end -- already exalted or paragon reward
-              if self:ItemCD(itemID) then return false end -- CD other tokens can be used then
+          if foundUseLine then
+            if self:ItemIsUnusable(lines[i].leftColor:GetRGBAAsBytes()) then
+              self:Verbose("itemID",itemID,"has red text in tooltip!",text)
+              return false
+            end
+            if i == 1 then -- all faction tokens should be checked
+              local level, top, value, reward = self:GetReputation(text)
+              if level then
+                if ((level > 7) and NOP.AceDB.profile.SkipExalted) or reward then return false end -- already exalted or paragon reward
+                if self:ItemCD(itemID) then return false end -- CD other tokens can be used then
+              end
             end
           end
         end
       end
-      if lines[i] and lines[i].rightText then
+      if not isRecipe and lines[i] and lines[i].rightText then
         local text = lines[i].rightText
         if text and text ~= "" then
-          if self:ItemIsUnusable(lines[i].rightColor:GetRGBAAsBytes()) then 
+          if self:ItemIsUnusable(lines[i].rightColor:GetRGBAAsBytes()) then
             self:Verbose("itemID",itemID,"has red text in tooltip!",text)
             return false
           end

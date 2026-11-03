@@ -86,6 +86,7 @@ P.RO_SHIPYARD = 128373 -- Rush Orders: Shipyards in Garrison always get lower pr
 P.CB_CVAR = "colorblindMode"
 P.ITEM_TYPE_BATTLE_PET = "battlepet"
 P.ITEM_TYPE_ITEM = "item"
+P.ITEM_TYPE_RECIPE = "Recipe"
 P.RGB_YELLOW = "|cFFFFFF00"
 P.RGB_RED = "|cFFFF0000"
 P.RGB_MAGENTA = "|cFF00FFFF"
