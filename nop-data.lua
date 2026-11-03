@@ -54,6 +54,18 @@ NOP.T_ITEM_REQUIRE_QUEST_NOT_COMPLETED = { -- [itemID] = questID, entries where 
   [222649] = 83734,                        -- Algari Treatise on Skinning
   [222551] = 83731,                        -- Algari Treatise on Jewelcrafting
   [222549] = 83732,                        -- Algari Treatise on Leatherworking
+  -- Midnight
+  [245757] = 95131,                        -- Thalassian Treatise on Inscription
+  [245763] = 95128,                        -- Thalassian Treatise on Blacksmithing
+  [245761] = 95130,                        -- Thalassian Treatise on Herbalism
+  [245755] = 95127,                        -- Thalassian Treatise on Alchemy
+  [245762] = 95135,                        -- Thalassian Treatise on Mining
+  [245756] = 95137,                        -- Thalassian Treatise on Tailoring
+  [245809] = 95138,                        -- Thalassian Treatise on Engineering
+  [245759] = 95129,                        -- Thalassian Treatise on Enchanting
+  [245828] = 95136,                        -- Thalassian Treatise on Skinning
+  [245760] = 95133,                        -- Thalassian Treatise on Jewelcrafting
+  [245758] = 95134,                        -- Thalassian Treatise on Leatherworking
 
   -- [itemID] = questID, --
 }
@@ -1465,5 +1477,11 @@ NOP.T_ITEMS = {                                                                 
   [249891] = { { 1, PRI_OPEN }, nil, nil },   -- Mound of Artifactium Sand
   [254267] = { { 100, PRI_OPEN }, nil, nil }, -- Fragmented Memento of Epoch Challenges
   --[] = {{1,PRI_OPEN},nil,nil}, --
-
+  [268650] = { { 5, PRI_OPEN }, nil, nil }, -- Ascendant Voidshard
+  [268297] = { { 1, PRI_OPEN }, nil, nil }, -- Rattling Bag o' Gold
+  [262792] = { { 100, PRI_OPEN }, nil, nil }, -- Shredded Bloomline
+  [262797] = { { 100, PRI_OPEN }, nil, nil }, -- Shredded Glimmerline
+  [262793] = { { 20, PRI_OPEN }, nil, nil }, -- Stranded Bloomline
+  [262798] = { { 20, PRI_OPEN }, nil, nil }, -- Stranded Glimmerline
+  [279288] = { { 1, PRI_OPEN }, nil, nil }, -- Corroded Satchel
 }

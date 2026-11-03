@@ -1,9 +1,7 @@
-## Interface: 110207, 120000, 120001
+## Interface: 120105
 ## Title: New |cffffff88Openables|r
 ## Author: cont1nuity (previous maintainers/creators: srhinos, PeknaMrcha alias EduardCurse alias Edik)
-#@version-retail@
 ## Version: @project-version@
-#@end-version-retail@
 ## Notes: Popup Button and keybind for opening or using items in your bags. Continued version of the original NOP to support Dragonflight.
 ## SavedVariables: NewOpenablesProfile
 ## OptionalDeps: Masque
@@ -11,6 +9,7 @@
 ## X-Wago-ID: RBKpYOGE
 
 LibStub\LibStub.lua
+EditModeExpanded-1.0\EditModeExpanded-1.0.xml
 CallbackHandler-1.0\CallbackHandler-1.0.lua
 AceAddon-3.0\AceAddon-3.0.xml
 AceDB-3.0\AceDB-3.0.xml 
@@ -34,6 +33,7 @@ nop-locale-zhCN.lua
 
 nop-private.lua
 nop-data.lua 
+nop-editmode.lua
 nop-button.lua
 nop-profile.lua
 nop-events.lua
